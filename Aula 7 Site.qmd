@@ -1,0 +1,74 @@
+---
+title: "Olá, Gusso"
+format: html
+editor: visual
+---
+
+```{r}
+#| label: load-packages
+#| include: false
+
+library(tidyverse)
+library(WDI)
+```
+
+```{r}
+#| label: load-data
+#| include: false
+
+#CÓDIGO DE CARREGAMENTO DE DADOS
+
+options(scipen = 999) 
+
+variaveis <- c("SP.DYN.LE00.IN", "SL.UEM.TOTL.ZS")
+dados_corte <- WDI(indicator = variaveis, country = "all", start = 2019, end = 2019) %>% na.omit()
+
+dados_serie <- WDI(indicator = "SP.DYN.LE00.IN", country = "BR", start = 1960, end = 2022)
+```
+
+## Gráfico de Corte Transversal: Expectativa de Vida e Taxa de Desemprego (2019)
+
+O gráfico apresenta a relação entre a expectativa de vida e a taxa de desemprego em diversos países no ano de 2019. A análise se baseia na dispersão dos dados e na tendência identificada pela regressão linear.
+
+A linha de tendência sugere uma relação negativa entre as variáveis, ou seja, países com taxas de desemprego mais elevadas tendem a apresentar uma expectativa de vida ligeiramente menor. No entanto, a inclinação da reta é pouco acentuada, indicando que o desemprego, isoladamente, não é um fator determinante para a expectativa de vida.
+
+A dispersão dos pontos no gráfico mostra que há uma grande variação entre os países. Enquanto alguns apresentam alta expectativa de vida mesmo com taxas de desemprego elevadas, outros registram o oposto. Isso sugere que outros fatores, como qualidade do sistema de saúde, nível de renda, educação e infraestrutura, exercem um papel significativo na determinação da expectativa de vida.
+
+Nos países desenvolvidos, o impacto do desemprego na expectativa de vida tende a ser menor devido à presença de redes de seguridade social, que garantem acesso a serviços básicos mesmo para aqueles sem trabalho formal. Já em países em desenvolvimento, altos índices de desemprego podem estar associados a piores condições de vida e menor acesso a cuidados médicos, o que pode reduzir a expectativa de vida.
+
+Para uma análise mais aprofundada, seria interessante considerar outras variáveis, como PIB per capita, IDH e acesso à saúde pública, além de comparar essa relação ao longo dos anos para identificar possíveis padrões. Dessa forma, seria possível determinar com maior precisão o impacto do desemprego na longevidade da população.
+
+```{r}
+#| label: Grafico1
+#| warning: false
+#| echo: false
+
+ggplot(dados_corte, aes(x = SL.UEM.TOTL.ZS, y = SP.DYN.LE00.IN)) +
+  geom_point(color = "blue", size = 3, alpha = 0.6) +
+  labs(title = "Expectativa de Vida vs Taxa de Desemprego (2019)",
+       x = "Taxa de Desemprego (%)",
+       y = "Expectativa de Vida (anos)") +
+  theme_minimal() +
+  geom_smooth(method = "lm", se = FALSE, color = "red")
+```
+
+## Gráfico de Série Temporal: Evolução da Expectativa de vida no Brasil (1960-2022)
+
+O gráfico mostra a evolução da expectativa de vida no Brasil entre 1960 e 2022, revelando uma trajetória de crescimento contínuo ao longo das décadas. Desde o início do período analisado, a expectativa de vida apresentou um aumento significativo, partindo de pouco mais de 50 anos para ultrapassar os 75 anos em 2020. Esse crescimento pode ser atribuído a diversos fatores, como a ampliação do acesso a serviços de saúde, melhorias no saneamento básico, avanços na medicina, melhor nutrição e redução da mortalidade infantil.
+
+Apesar da tendência de alta, pequenas oscilações ao longo do tempo refletem momentos de maior ou menor crescimento, possivelmente influenciados por crises econômicas, surtos de doenças e mudanças em políticas públicas. No entanto, o aspecto mais marcante do gráfico é a queda abrupta observada por volta de 2020, seguida por uma leve recuperação. Essa queda está diretamente relacionada à pandemia de COVID-19, que impactou fortemente a mortalidade da população, especialmente entre idosos e pessoas com comorbidades.
+
+Após esse choque, a expectativa de vida demonstra sinais de retomada, indicando que a tendência de crescimento pode ser restabelecida. De forma geral, a evolução da expectativa de vida no Brasil reflete avanços significativos nas condições socioeconômicas e na qualidade de vida da população, mas também evidencia desafios para o futuro, como a necessidade de fortalecer o sistema de saúde e garantir políticas públicas eficazes para sustentar essa tendência de melhoria.
+
+```{r}
+#| label: Grafico2
+#| warning: false
+#| echo: false
+
+ggplot(dados_serie, aes(x = year, y = SP.DYN.LE00.IN)) +
+  geom_line(color = "blue", size = 1) +
+  labs(title = "Evolução da Expectativa de Vida no Brasil (1960-2022)",
+       x = "Ano",
+       y = "Expectativa de Vida (anos)") +
+  theme_minimal()
+```
