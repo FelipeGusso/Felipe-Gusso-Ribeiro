@@ -1,0 +1,70 @@
+---
+title: "Olá, Gusso"
+format: html
+editor: visual
+---
+
+```{r}
+#| label: load-packages
+#| include: false
+
+library(tidyverse)
+library(WDI)
+```
+
+```{r}
+#| label: load-data
+#| include: false
+
+#CÓDIGO DE CARREGAMENTO DE DADOS
+
+options(scipen = 999) 
+
+variaveis <- c("SP.DYN.LE00.IN", "SL.UEM.TOTL.ZS")
+dados_corte <- WDI(indicator = variaveis, country = "all", start = 2019, end = 2019) %>% na.omit()
+
+dados_serie <- WDI(indicator = "SP.DYN.LE00.IN", country = "BR", start = 1960, end = 2022)
+```
+
+## Gráfico de Corte Transversal: Expectativa de Vida e Taxa de Desemprego (2019)
+
+O gráfico mostra a relação entre a expectativa de vida e a taxa de desemprego em diferentes países em 2019. A partir da dispersão dos dados e da linha de tendência da regressão linear, dá pra perceber uma correlação negativa entre as duas variáveis, ou seja, países com maior taxa de desemprego tendem a ter uma expectativa de vida um pouco menor.
+
+Apesar disso, a inclinação da reta é bem suave, o que indica que o desemprego, por si só, não explica muita coisa sobre a expectativa de vida. Os pontos estão bem espalhados no gráfico, o que mostra que existem muitos outros fatores influenciando esse resultado. Alguns países, por exemplo, têm alta expectativa de vida mesmo com desemprego elevado, enquanto outros mostram o contrário.
+
+Isso reforça a ideia de que variáveis como sistema de saúde, renda, educação e infraestrutura pesam bastante nessa equação. Em países desenvolvidos, o impacto do desemprego tende a ser menor justamente porque existem redes de proteção social que ajudam a manter um padrão mínimo de qualidade de vida. Já em países em desenvolvimento, o desemprego geralmente vem acompanhado de piores condições de vida, o que pode afetar diretamente a saúde e a longevidade da população.\
+
+```{r}
+#| label: Grafico1
+#| warning: false
+#| echo: false
+
+ggplot(dados_corte, aes(x = SL.UEM.TOTL.ZS, y = SP.DYN.LE00.IN)) +
+  geom_point(color = "blue", size = 3, alpha = 0.6) +
+  labs(title = "Expectativa de Vida vs Taxa de Desemprego (2019)",
+       x = "Taxa de Desemprego (%)",
+       y = "Expectativa de Vida (anos)") +
+  theme_minimal() +
+  geom_smooth(method = "lm", se = FALSE, color = "red")
+```
+
+## Gráfico de Série Temporal: Evolução da Expectativa de vida no Brasil (1960-2022)
+
+O gráfico mostra como a expectativa de vida no Brasil evoluiu entre 1960 e 2022, e dá pra ver claramente um crescimento contínuo ao longo dos anos. Lá no começo, a média era pouco acima dos 50 anos, e em 2020 já passava dos 75. Esse aumento está ligado a várias melhorias, como maior acesso à saúde, avanços na medicina, melhor alimentação, saneamento e queda na mortalidade infantil.
+
+Mesmo com essa tendência de alta, dá pra notar algumas oscilações em certos períodos. Provavelmente isso tem a ver com crises econômicas, surtos de doenças ou mudanças nas políticas públicas. Mas o que mais chama atenção é a queda brusca em torno de 2020, que foi quando começou a pandemia de COVID-19. O impacto foi direto na expectativa de vida.
+
+Depois desse baque, o gráfico já mostra uma leve recuperação, o que indica que a tendência de alta pode voltar a se firmar nos próximos anos. No geral, essa evolução mostra que o Brasil teve avanços importantes nas condições de vida e saúde da população, mas também deixa claro que ainda tem muito desafio pela frente — especialmente no fortalecimento do SUS e na criação de políticas públicas que consigam manter esse ritmo de melhoria e que se protejam de crises que possam afetar a expectativa de vida.
+
+```{r}
+#| label: Grafico2
+#| warning: false
+#| echo: false
+
+ggplot(dados_serie, aes(x = year, y = SP.DYN.LE00.IN)) +
+  geom_line(color = "blue", size = 1) +
+  labs(title = "Evolução da Expectativa de Vida no Brasil (1960-2022)",
+       x = "Ano",
+       y = "Expectativa de Vida (anos)") +
+  theme_minimal()
+```
