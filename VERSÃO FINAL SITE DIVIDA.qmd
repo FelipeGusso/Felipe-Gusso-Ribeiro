@@ -1,5 +1,5 @@
 ---
-title: "Dívida SC 2007 - Atualidade"
+title: "Dívida SC 2007 - 2024"
 author: "Felipe Gusso Ribeiro"
 format: html
 editor: visual
@@ -29,7 +29,7 @@ df.bcb <- gbcbd_get_series(
 )
 ```
 
-## Valor da Dívida de Santa Catarina de 2007 até os dias atuais.
+## Valor da Dívida de Santa Catarina de 2007 até 2024.
 
 O gráfico apresenta a evolução da dívida líquida do Governo do Estado de Santa Catarina entre janeiro de 2008 e outubro de 2024. Ao longo desse período, é possível identificar três momentos distintos: uma fase de estabilidade até meados de 2014, seguida por um crescimento acentuado até 2020, e, por fim, um período de queda significativa nos anos seguintes. Essas variações refletem tanto os efeitos de políticas estaduais quanto o impacto de conjunturas econômicas nacionais e internacionais.
 
@@ -50,7 +50,7 @@ p <- ggplot(df.bcb, aes(x = ref.date, y = value)) +
   geom_line(color = "#0072B2", size = 1) +  # azul elegante
   geom_point(color = "#D55E00", size = 1, alpha = 0.6) +  # pontos laranja
   labs(
-    title = 'Dívida Líquida do Governo de SC (2007 - Atualidade)',
+    title = 'Dívida Líquida do Governo de SC (2007 - 2024)',
     subtitle = paste0(format(min(df.bcb$ref.date), "%B/%Y"),
                       ' até ',
                       format(max(df.bcb$ref.date), "%B/%Y")),
