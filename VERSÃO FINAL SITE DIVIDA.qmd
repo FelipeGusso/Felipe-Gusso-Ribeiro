@@ -1,0 +1,70 @@
+---
+title: "Dívida SC 2007 - Atualidade"
+author: "Felipe Gusso Ribeiro"
+format: html
+editor: visual
+---
+
+```{r}
+#| label: load-packages
+#| include: false
+
+library(GetBCBData)
+library(tidyverse)
+```
+
+```{r}
+#| label: load-data
+#| include: false
+
+my.id <- c(Dívida_SC = 15552)
+df.bcb <- gbcbd_get_series(
+  id = my.id,
+  first.date = '2007-12-01',
+  last.date = Sys.Date(),
+  format.data = 'long',
+  use.memoise = TRUE,
+  cache.path = tempdir(),
+  do.parallel = FALSE
+)
+```
+
+## Valor da Dívida de Santa Catarina de 2007 até os dias atuais.
+
+O gráfico apresenta a evolução da dívida líquida do Governo do Estado de Santa Catarina entre janeiro de 2008 e outubro de 2024. Ao longo desse período, é possível identificar três momentos distintos: uma fase de estabilidade até meados de 2014, seguida por um crescimento acentuado até 2020, e, por fim, um período de queda significativa nos anos seguintes. Essas variações refletem tanto os efeitos de políticas estaduais quanto o impacto de conjunturas econômicas nacionais e internacionais.
+
+Entre 2008 e 2014, durante os governos de Luiz Henrique da Silveira e Raimundo Colombo, ambos do PMDB, a dívida estadual permaneceu relativamente estável, oscilando entre nove e onze bilhões de reais. Essa estabilidade foi favorecida por um contexto nacional de crescimento econômico, impulsionado pelo boom das commodities e pelo aumento do consumo interno, que elevou a arrecadação de tributos como o ICMS. Nesse período, o estado conseguiu manter suas contas equilibradas, mesmo com investimentos em infraestrutura e expansão de serviços públicos.
+
+A partir de 2015, contudo, a dívida entra em trajetória de crescimento acelerado. A gestão de Raimundo Colombo enfrentou os efeitos da grave crise econômica nacional iniciada em 2014, que reduziu a arrecadação e aumentou os gastos públicos, especialmente com pessoal e previdência. Em 2018, já com Eduardo Pinho Moreira no comando do estado, a situação fiscal continuava pressionada, e o nível de endividamento seguia em alta. A pandemia de COVID-19, a partir de 2020, agravou ainda mais esse cenário. Embora o governo federal tenha transferido recursos para os estados, houve um aumento generalizado dos gastos emergenciais em saúde, assistência social e ações para mitigar os efeitos econômicos da crise. Com isso, Santa Catarina atingiu, em 2020, o maior patamar de dívida líquida do período, superando os dezenove bilhões de reais.
+
+A reversão desse quadro tem início em 2021, já sob o governo de Carlos Moisés, inicialmente eleito pelo PSL. A retomada da economia, aliada a um aumento da arrecadação estadual, contribuiu para a melhora das contas públicas. Além disso, foram adotadas medidas de ajuste fiscal, com maior controle de gastos, revisão de contratos e racionalização da máquina pública. Em 2023, com a posse de Jorginho Mello (PL), o estado manteve a orientação de responsabilidade fiscal, priorizando o equilíbrio entre receitas e despesas. Como resultado, a dívida líquida apresentou uma trajetória consistente de queda, aproximando-se de doze bilhões de reais em 2024, retornando a níveis observados em meados da década anterior.
+
+A análise do gráfico evidencia como decisões de política fiscal, associadas a choques econômicos e sanitários, influenciam diretamente a trajetória da dívida pública estadual. Santa Catarina passou por um ciclo de forte endividamento, seguido de um processo de ajuste e consolidação fiscal, demonstrando a importância da disciplina orçamentária para garantir a sustentabilidade das contas públicas ao longo do tempo.
+
+```{r}
+#| label: DÍVIDA SC
+#| warning: false
+#| echo: false
+
+p <- ggplot(df.bcb, aes(x = ref.date, y = value)) +
+  geom_line(color = "#0072B2", size = 1) +  # azul elegante
+  geom_point(color = "#D55E00", size = 1, alpha = 0.6) +  # pontos laranja
+  labs(
+    title = 'Dívida Líquida do Governo de SC (2007 - Atualidade)',
+    subtitle = paste0(format(min(df.bcb$ref.date), "%B/%Y"),
+                      ' até ',
+                      format(max(df.bcb$ref.date), "%B/%Y")),
+    x = 'Período',
+    y = 'Valor (em Milhões R$)',
+    caption = 'Fonte: Banco Central do Brasil - SGS'
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(size = 12, margin = margin(b = 10)),
+    axis.title = element_text(face = "bold"),
+    panel.grid.minor = element_blank()
+  )
+
+print(p)
+```
