@@ -1,0 +1,116 @@
+---
+title: "Dívida SC 2007 - 2024"
+author: "Felipe Gusso Ribeiro"
+format: html
+editor: visual
+---
+
+```{r}
+#| label: load-packages
+#| include: false
+
+library(GetBCBData)
+library(tidyverse) 
+library(ggplot2)
+library(gganimate)
+library(gifski)
+library(ragg)
+library(knitr)
+```
+
+```{r}
+#| label: carregar graf
+#| include: false
+
+my.id <- c(Dívida_SC = 15552)
+
+df.bcb <- gbcbd_get_series(id = my.id ,
+                           first.date = '2007-12-01',
+                           last.date = Sys.Date(),
+                           format.data = 'long',
+                           use.memoise = TRUE, 
+                           cache.path = tempdir(), # use tempdir for cache folder
+                           do.parallel = FALSE)
+
+glimpse(df.bcb)
+```
+
+```{r}
+#| label: graf1
+#| warning: false
+#| echo: false
+```
+
+## Valor da Dívida de Santa Catarina de 2007 até 2024.
+
+A dívida pública de um estado corresponde ao total de compromissos financeiros assumidos com instituições como a União, bancos públicos e privados ou organismos internacionais. Ela se origina, principalmente, de empréstimos contratados para financiar investimentos em infraestrutura, saúde, educação ou para cobrir déficits orçamentários.
+
+O tamanho da dívida, por si só, não indica má gestão. Em muitos casos, ela é usada de forma estratégica para promover o crescimento econômico. O problema surge quando ela cresce de forma insustentável, comprometendo a capacidade de o estado honrar seus compromissos e afetando a oferta de serviços públicos.
+
+```{r}
+#| label: grafico-animado
+#| warning: false
+#| echo: false
+#| fig-align: center
+
+# Criar gráfico com animação
+p <- ggplot(df.bcb, aes(x = ref.date, y = value / 100)) +
+  geom_line(color = "lightgreen", size = 1.2) +
+  labs(title = "Valor da Dívida de Santa Catarina de 2007 até 2024",
+       subtitle = "Período: {frame_along}",
+       x = "", y = "Índice") +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  theme_light() +
+  transition_reveal(ref.date)
+
+# Criar pasta "figures" se não existir
+dir.create("figures", showWarnings = FALSE)
+
+# Caminho relativo para salvar o GIF
+gif_path <- "figures/grafico_animado_ICC.gif"
+
+# Criar e salvar animação com dimensões seguras
+anim <- animate(
+  p,
+  width = 8, height = 6,             # polegadas
+  units = "in",
+  res = 100,                         # resolução (800x600 px)
+  fps = 20, duration = 10,
+  renderer = gifski_renderer(),
+  device = "ragg_png"
+)
+
+# Salvar o GIF na pasta figures
+anim_save(gif_path, animation = anim)
+
+# Incluir GIF no HTML final
+knitr::include_graphics(gif_path)
+```
+
+O gráfico exibe a evolução da dívida consolidada líquida de Santa Catarina entre 2007 e 2024. Observa-se um crescimento contínuo da dívida entre 2013 e 2019 (até o início do segundo semestre) e partir de 2019 (metade do segundo semestre), nota-se uma queda acentuada. Nos anos mais recentes (2023–2024), essa queda se mantém.
+
+Pode-se entender melhor os motivos pelo qual essa dívida cresceu e retraiu analisando os governos e as medidas adotadas nos ultimos anos:
+
+Entre 2007 e 2010, sob a gestão de Luiz Henrique da Silveira (PMDB), Santa Catarina manteve estabilidade fiscal. A dívida consolidada líquida era de R\$ 8,06 bilhões em 2008, representando aproximadamente 7,75% do PIB estadual. Durante esse período, o estado seguiu as diretrizes da Lei de Responsabilidade Fiscal e apresentou superávits primários, evitando novos aumentos expressivos da dívida e demonstrando prudência na gestão dos recursos públicos.
+
+A partir de 2011, com Raimundo Colombo (PSD) à frente do governo, Santa Catarina adotou uma postura mais expansiva em relação à dívida. Seu principal programa, o "Pacto por Santa Catarina", previa investimentos superiores a R\$ 5 bilhões, financiados por empréstimos junto ao BNDES, BID e CAF. Essa política possibilitou melhorias estruturais, como obras em rodovias, hospitais e escolas, mas também fez com que a dívida ultrapassasse os R\$ 20 bilhões até o fim de sua gestão, exigindo maior controle fiscal nos anos seguintes.
+
+No período de 2019 a 2022, o governador Carlos Moisés (PSL, depois Republicanos) promoveu uma inflexão na política fiscal, com foco na reorganização das contas públicas. Sua administração conseguiu reduzir significativamente o endividamento, passando de R\$ 20,1 bilhões para R\$ 14,1 bilhões — uma quitação de mais de R\$ 8 bilhões em contratos antigos. Essa redução foi possível devido a superávits primários, racionalização de despesas e aumento da arrecadação. Moisés também implementou programas como o “Plano 1000”, investindo diretamente nos municípios sem recorrer a novo endividamento.
+
+Por fim, a partir de 2023, o atual governador Jorginho Mello (PL) tem mantido o foco na responsabilidade fiscal. Medidas como o programa “Recupera Mais”, que arrecadou R\$ 1,1 bilhão em dívidas ativas, e a renegociação de R\$ 3,5 bilhões em débitos tributários ajudaram a equilibrar as finanças do estado. Também se destaca a criação da primeira PPP estadual, com a concessão do Aeroporto de Jaguaruna.
+
+Conclui-se, assim, que ao longo de quase duas décadas, Santa Catarina alternou entre momentos de expansão da dívida para financiar investimentos e períodos de forte ajuste fiscal. Os dados revelam que, mesmo com variações significativas, o estado conseguiu manter a dívida sob controle, especialmente nos últimos anos, com políticas de gestão responsável e aumento da eficiência arrecadatória.
+
+## Fontes:
+
+Assembleia Legislativa de SC – Relatório de Gestão Fiscal 2008
+
+Wikipédia – [Governadores de SC](https://pt.wikipedia.org/wiki/Lista_de_governadores_de_Santa_Catarina)
+
+SEF/SC – Redução da dívida
+
+JUCSC – Boletim econômico
+
+PGE/SC – Recupera Mais
+
+RCN Online – PPP e investimentos de SC
